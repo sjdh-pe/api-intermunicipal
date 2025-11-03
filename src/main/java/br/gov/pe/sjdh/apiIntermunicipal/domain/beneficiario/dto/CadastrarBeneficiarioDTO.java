@@ -1,14 +1,14 @@
 package br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto;
 
 
-import br.gov.pe.sjdh.apiIntermunicipal.domain.endereco.DadosEndereco;
+import br.gov.pe.sjdh.apiIntermunicipal.domain.endereco.DadosEnderecoDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.br.CPF;
+
 
 import java.time.LocalDate;
 
-public record DadosCadastrarBeneficiarioDTO(
+public record CadastrarBeneficiarioDTO(
 
     @NotBlank(message = "O nome é obrigatório")
     @Size(max = 100, message = "O nome pode ter no máximo 100 caracteres")
@@ -67,7 +67,7 @@ public record DadosCadastrarBeneficiarioDTO(
     // Endereço
     @NotNull(message = "O endereço é obrigatório")
     @Valid // Permite validar os campos internos de DadosEndereco
-    DadosEndereco endereco,
+    DadosEnderecoDTO endereco,
 
     @NotNull(message = "Informe se possui VEM Livre Acesso RMR")
     Boolean vemLivreAcessoRmr

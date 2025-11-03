@@ -1,4 +1,4 @@
-package br.gov.pe.sjdh.apiIntermunicipal.config;
+package br.gov.pe.sjdh.apiIntermunicipal.infra.exception.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

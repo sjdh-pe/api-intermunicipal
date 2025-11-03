@@ -1,4 +1,4 @@
-package br.gov.pe.sjdh.apiIntermunicipal.config;
+package br.gov.pe.sjdh.apiIntermunicipal.infra.exception.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

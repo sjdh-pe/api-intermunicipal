@@ -1,4 +1,4 @@
-package br.gov.pe.sjdh.apiIntermunicipal.exception;
+package br.gov.pe.sjdh.apiIntermunicipal.infra.exception;
 
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {

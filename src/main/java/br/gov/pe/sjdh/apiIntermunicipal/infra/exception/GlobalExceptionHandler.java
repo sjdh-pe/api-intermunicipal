@@ -1,4 +1,4 @@
-package br.gov.pe.sjdh.apiIntermunicipal.exception;
+package br.gov.pe.sjdh.apiIntermunicipal.infra.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

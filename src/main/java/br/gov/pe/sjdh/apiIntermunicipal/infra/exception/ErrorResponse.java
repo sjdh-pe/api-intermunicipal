@@ -1,4 +1,4 @@
-package br.gov.pe.sjdh.apiIntermunicipal.exception;
+package br.gov.pe.sjdh.apiIntermunicipal.infra.exception;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
