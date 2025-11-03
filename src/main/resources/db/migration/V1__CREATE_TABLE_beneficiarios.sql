@@ -1,32 +1,43 @@
--- ============================================================
--- TABELAS DE REFERÊNCIA (LOOKUP TABLES)
--- ============================================================
+-- ========================================
+-- SCHEMA COMPLETO - 2025-10-29
+-- Autor: Raul Michel de França
+-- Inclui: Tabelas, FKs, Triggers, Views
+-- ========================================
 
--- Tabela de Tipos de Deficiência
-CREATE TABLE IF NOT EXISTS tipos_deficiencia (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nome        VARCHAR(50) NOT NULL UNIQUE,
-    descricao   VARCHAR(150),
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET COLLATION_CONNECTION = 'utf8mb4_general_ci';
+
+-- ==============================
+-- TABELAS AUXILIARES
+-- ==============================
+
+CREATE TABLE `tipos_deficiencia` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(50) NOT NULL,
+    `descricao` VARCHAR(200),
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `tipos_deficiencia_nome_unique` (`nome`)
+);
 
 -- Inserir dados iniciais
-INSERT INTO tipos_deficiencia (id, nome, descricao) VALUES 
+INSERT INTO tipos_deficiencia (id, nome, descricao) VALUES
 (1, 'Física', 'Deficiência que afeta a mobilidade e coordenação motora'),
 (2, 'Visual', 'Deficiência relacionada à visão (cegueira ou baixa visão)'),
 (3, 'Auditiva', 'Deficiência relacionada à audição (surdez ou baixa audição)'),
 (4, 'Intelectual', 'Deficiência que afeta o desenvolvimento intelectual'),
 (5, 'Múltipla', 'Combinação de duas ou mais deficiências');
 
--- Tabela de Status do Benefício
-CREATE TABLE IF NOT EXISTS status_beneficio (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nome        VARCHAR(30) NOT NULL UNIQUE,
-    descricao   VARCHAR(100),
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `status_beneficio` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(30) NOT NULL,
+    `descricao` VARCHAR(100),
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `status_beneficio_nome_unique` (`nome`)
+);
 
 -- Inserir dados iniciais
 INSERT INTO status_beneficio (id, nome) VALUES
@@ -41,32 +52,33 @@ INSERT INTO status_beneficio (id, nome) VALUES
 (9, 'Disponível para Retirada'),
 (10, 'Pendência Sancionada');
 
--- Tabela de Locais de Retirada
-CREATE TABLE IF NOT EXISTS locais_retirada (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nome        VARCHAR(50) NOT NULL UNIQUE,
-    endereco    VARCHAR(150),
-    telefone    VARCHAR(20),
-    horario_funcionamento VARCHAR(100),
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `locais_retirada` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(50) NOT NULL,
+    `endereco` VARCHAR(200),
+    `telefone` VARCHAR(20),
+    `horario_funcionamento` VARCHAR(100),
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `locais_retirada_nome_unique` (`nome`)
+);
 
 -- Inserir dados iniciais
 INSERT INTO locais_retirada (id, nome, endereco) VALUES
-(1, 'Recife', 'Endereço da unidade de Recife'),
-(2, 'Camaragibe', 'Endereço da unidade de Camaragibe'),
+(1, 'Recife', 'Av. Conde da Boa Vista nº 1410, Empresarial Palmira, 4º andar, Boa Vista, Recife (PE)'),
+(2, 'Caruaru', 'Endereço da unidade de Caruaru'),
 (3, 'Paulista', 'Endereço da unidade de Paulista'),
 (4, 'Jaboatão dos Guararapes', 'Endereço da unidade de Jaboatão'),
 (5, 'Olinda', 'Endereço da unidade de Olinda');
 
--- Tabela de Etnias
-CREATE TABLE IF NOT EXISTS etnias (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nome        VARCHAR(30) NOT NULL UNIQUE,
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `etnias` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(30) NOT NULL,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `etnias_nome_unique` (`nome`)
+);
 
 -- Inserir dados iniciais (baseado no IBGE)
 INSERT INTO etnias (id, nome) VALUES
@@ -77,13 +89,13 @@ INSERT INTO etnias (id, nome) VALUES
 (5, 'Indígena'),
 (6, 'Não Declarada');
 
--- Tabela de Sexo/Gênero
-CREATE TABLE IF NOT EXISTS sexos (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nome        VARCHAR(20) NOT NULL UNIQUE,
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `sexos` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(20) NOT NULL,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `sexos_nome_unique` (`nome`)
+);
 
 -- Inserir dados iniciais
 INSERT INTO sexos (id, nome) VALUES
@@ -95,17 +107,16 @@ INSERT INTO sexos (id, nome) VALUES
 (6, 'Não binário'),
 (7, 'Prefiro não informar');
 
--- Tabela de Cidades de Pernambuco
-CREATE TABLE IF NOT EXISTS cidades (
-    id          SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-    nome        VARCHAR(80) NOT NULL UNIQUE,
-    uf      CHAR(2) NOT NULL DEFAULT 'PE',
-    ativo       BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE `cidades` (
+    `id` SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+    `nome` VARCHAR(80) NOT NULL,
+    `uf` CHAR(2) NOT NULL DEFAULT 'PE',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `cidades_nome_unique` (`nome`),
+    INDEX `cidades_uf_index` (`uf`)
+);
 
-    INDEX idx_nome (nome),
-    INDEX idx_estado (uf)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Inserir dados das cidades de Pernambuco
 INSERT INTO cidades (id, nome) VALUES
@@ -295,172 +306,250 @@ INSERT INTO cidades (id, nome) VALUES
 (5503, 'VITÓRIA DE SANTO ANTÃO'),
 (5505, 'XEXÉU');
 
--- ============================================================
--- TABELA BENEFICIÁRIOS
--- ============================================================
 
-CREATE TABLE IF NOT EXISTS beneficiarios (
-    -- Identificação
-    id                  BINARY(16) NOT NULL PRIMARY KEY,     -- UUID armazenado em 16 bytes
-    nome                VARCHAR(100) NOT NULL,
-    nome_mae            VARCHAR(100) NOT NULL,
-    cpf                 CHAR(11) NOT NULL UNIQUE,
-    rg                  VARCHAR(20) NOT NULL,
-    data_nascimento     DATE NOT NULL,
+-- ==============================
+-- TABELAS PRINCIPAIS
+-- ==============================
 
-    sexo_id             SMALLINT UNSIGNED NOT NULL,
-    etnia_id            SMALLINT UNSIGNED NOT NULL,
-    tipo_deficiencia_id SMALLINT UNSIGNED NOT NULL,
-    status_beneficio_id SMALLINT UNSIGNED NOT NULL DEFAULT 1, -- Em análise por padrão
-    local_retirada_id   SMALLINT UNSIGNED NOT NULL,
+CREATE TABLE `responsaveis` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(80) NOT NULL,
+    `cpf` CHAR(11) NOT NULL,
+    `rg` VARCHAR(15) NOT NULL,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `responsaveis_cpf_unique` (`cpf`)
+);
 
-    -- Configurações específicas
-    vem_livre_acesso_rmr BOOLEAN NOT NULL DEFAULT FALSE,
+CREATE TABLE `usuarios` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(100) NOT NULL,
+    `cpf` CHAR(11) NOT NULL,
+    `senha` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    UNIQUE KEY `usuarios_cpf_unique` (`cpf`),
+    UNIQUE KEY `usuarios_email_unique` (`email`)
+);
+
+CREATE TABLE `tipo_arquivo` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(32) NOT NULL,
+    `descricao` VARCHAR(150),
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `tipo_arquivo_nome_unique` (`nome`)
+);
+
+-- Inserir dados tipo_arquivo
+INSERT INTO tipo_arquivo (nome, descricao, ativo, created_at)
+VALUES
+    ('RG', 'Documento de Identidade (frente e verso)', TRUE, CURRENT_TIMESTAMP),
+    ('CPF', 'Cadastro de Pessoa Física', TRUE, CURRENT_TIMESTAMP),
+    ('Foto 3x4', 'Fotografia recente para identificação', TRUE, CURRENT_TIMESTAMP),
+    ('Cartão VEM', 'Cópia do cartão VEM Livre Acesso, se houver', TRUE, CURRENT_TIMESTAMP),
+    ('Comprovante de Residência', 'Conta de luz, água ou telefone recente', TRUE, CURRENT_TIMESTAMP),
+    ('Laudo Médico', 'Laudo médico que comprove a deficiência', TRUE, CURRENT_TIMESTAMP),
+    ('Certidão de Nascimento', 'Certidão de nascimento original do beneficiário', TRUE, CURRENT_TIMESTAMP),
+    ('Certidão de Casamento', 'Certidão de casamento original do beneficiário', TRUE, CURRENT_TIMESTAMP),
+    ('Declaração Escolar', 'Documento emitido pela instituição de ensino', TRUE, CURRENT_TIMESTAMP),
+    ('Comprovante de Renda', 'Holerite, declaração de imposto de renda ou documento equivalente', TRUE, CURRENT_TIMESTAMP),
+    ('Termo de Responsabilidade', 'Documento assinado pelo responsável legal', TRUE, CURRENT_TIMESTAMP),
+    ('Ofício', 'Documento institucional enviado por órgão público', TRUE, CURRENT_TIMESTAMP),
+    ('Outros', 'Qualquer outro tipo de documento adicional', TRUE, CURRENT_TIMESTAMP);
+
+CREATE TABLE `beneficiarios` (
+     -- Identificação
+    `id` BINARY(16) NOT NULL PRIMARY KEY,
+    `nome` VARCHAR(100) NOT NULL,
+    `nome_mae` VARCHAR(100) NOT NULL,
+    `cpf` CHAR(11) NOT NULL,
+    `rg` VARCHAR(20) NOT NULL,
+    `data_nascimento` DATE NOT NULL,
+
+    `id_responsavel` INT UNSIGNED NULL,
+    `sexo_id` TINYINT UNSIGNED NOT NULL,
+    `etnia_id` TINYINT UNSIGNED NOT NULL,
+    `tipo_deficiencia_id` TINYINT UNSIGNED NOT NULL,
+    `status_beneficio_id` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    `local_retirada_id` TINYINT UNSIGNED NOT NULL,
+
+    `vem_livre_acesso_rmr` BOOLEAN NOT NULL DEFAULT FALSE,
 
     -- Contato
-    telefone            VARCHAR(15) NOT NULL,               -- Apenas números
-    email               VARCHAR(100) NOT NULL,
+    `telefone` VARCHAR(15) NOT NULL,
+    `email` VARCHAR(100),
 
     -- Endereço
-    endereco            VARCHAR(200) NOT NULL,
-    numero              VARCHAR(10),
-    complemento         VARCHAR(50),
-    bairro              VARCHAR(80) NOT NULL,
-    cidade_id           SMALLINT UNSIGNED NOT NULL,
-    uf              CHAR(2) NOT NULL DEFAULT 'PE',     -- Assumindo Pernambuco
-    cep                 CHAR(9),
-
-    -- Caminhos dos arquivos (otimizado)
-    path_rg                     VARCHAR(255),              -- Reduzido de 500 para 255
-    path_cpf                    VARCHAR(255),
-    path_comprovante_endereco   VARCHAR(255),
-    path_foto                   VARCHAR(255),
-    path_laudo_medico          VARCHAR(255),
+    `endereco` VARCHAR(200) NOT NULL,
+    `numero` VARCHAR(10),
+    `complemento` VARCHAR(50),
+    `bairro` VARCHAR(80) NOT NULL,
+    `cidade_id` SMALLINT UNSIGNED NOT NULL,
+    `uf` CHAR(2) NOT NULL DEFAULT 'PE',
+    `cep` CHAR(9),
 
     -- Metadados
-    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    ativo               BOOLEAN NOT NULL DEFAULT TRUE,     -- Renomeado de 'status'
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
 
-    -- Índices e constraints
+    UNIQUE KEY `beneficiarios_cpf_unique` (`cpf`),
+
+    -- Índices
     INDEX idx_cpf (cpf),
     INDEX idx_nome (nome),
     INDEX idx_status_beneficio (status_beneficio_id),
     INDEX idx_local_retirada (local_retirada_id),
     INDEX idx_tipo_deficiencia (tipo_deficiencia_id),
     INDEX idx_created_at (created_at),
-    INDEX idx_cidade (cidade_id),
+    INDEX idx_cidade (cidade_id)
 
-    -- Chaves estrangeiras
-    CONSTRAINT fk_beneficiarios_sexo
-        FOREIGN KEY (sexo_id) REFERENCES sexos(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+);
 
-    CONSTRAINT fk_beneficiarios_etnia
-        FOREIGN KEY (etnia_id) REFERENCES etnias(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+CREATE TABLE `beneficiario_arquivo` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `beneficiario_id` BINARY(16) NOT NULL,
+    `tipo_arquivo_id` TINYINT UNSIGNED NOT NULL,
+    `path` VARCHAR(255) NOT NULL,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+);
 
-    CONSTRAINT fk_beneficiarios_tipo_deficiencia
-        FOREIGN KEY (tipo_deficiencia_id) REFERENCES tipos_deficiencia(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+CREATE TABLE `historico_status_beneficiario` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `beneficiario_id` BINARY(16) NOT NULL,
+    `status_anterior_id` TINYINT UNSIGNED,
+    `status_novo_id` TINYINT UNSIGNED NOT NULL,
+    `motivo` TEXT,
+    `usuario_id` INT UNSIGNED,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_hist_status_beneficiario_beneficiario` (`beneficiario_id`, `status_novo_id`)
+);
 
-    CONSTRAINT fk_beneficiarios_status_beneficio
-        FOREIGN KEY (status_beneficio_id) REFERENCES status_beneficio(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+-- ==============================
+-- FOREIGN KEYS
+-- ==============================
 
-    CONSTRAINT fk_beneficiarios_local_retirada
-        FOREIGN KEY (local_retirada_id) REFERENCES locais_retirada(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+ALTER TABLE `beneficiarios`
+  ADD CONSTRAINT `fk_beneficiarios_responsavel` FOREIGN KEY (`id_responsavel`) REFERENCES `responsaveis`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_tipo_deficiencia` FOREIGN KEY (`tipo_deficiencia_id`) REFERENCES `tipos_deficiencia`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_status_beneficio` FOREIGN KEY (`status_beneficio_id`) REFERENCES `status_beneficio`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_sexo` FOREIGN KEY (`sexo_id`) REFERENCES `sexos`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_etnia` FOREIGN KEY (`etnia_id`) REFERENCES `etnias`(`id`),
+  ADD CONSTRAINT `fk_beneficiarios_local_retirada` FOREIGN KEY (`local_retirada_id`) REFERENCES `locais_retirada`(`id`);
 
-    CONSTRAINT fk_beneficiarios_cidade
-        FOREIGN KEY (cidade_id) REFERENCES cidades(id)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+ALTER TABLE `beneficiario_arquivo`
+  ADD CONSTRAINT `fk_beneficiario_arquivo_tipo` FOREIGN KEY (`tipo_arquivo_id`) REFERENCES `tipo_arquivo`(`id`),
+  ADD CONSTRAINT `fk_beneficiario_arquivo_beneficiario` FOREIGN KEY (`beneficiario_id`) REFERENCES `beneficiarios`(`id`);
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE `historico_status_beneficiario`
+  ADD CONSTRAINT `fk_hist_status_beneficiario` FOREIGN KEY (`beneficiario_id`) REFERENCES `beneficiarios`(`id`),
+  ADD CONSTRAINT `fk_hist_status_anterior` FOREIGN KEY (`status_anterior_id`) REFERENCES `status_beneficio`(`id`),
+  ADD CONSTRAINT `fk_hist_status_novo` FOREIGN KEY (`status_novo_id`) REFERENCES `status_beneficio`(`id`),
+  ADD CONSTRAINT `fk_hist_status_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`);
 
--- ============================================================
--- TABELA PARA HISTÓRICO DE MUDANÇAS DE STATUS
--- ============================================================
+-- ==============================
+-- TRIGGERS
+-- ==============================
 
-CREATE TABLE IF NOT EXISTS historico_status_beneficiario (
-    id                  BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    beneficiario_id     BINARY(16) NOT NULL,
-    status_anterior_id  SMALLINT UNSIGNED,
-    status_novo_id      SMALLINT UNSIGNED NOT NULL,
-    motivo              TEXT,
-    usuario_id          BINARY(16),                        -- ID do usuário que fez a alteração
-    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+DELIMITER //
 
-    INDEX idx_beneficiario (beneficiario_id),
-    INDEX idx_created_at (created_at),
+-- Trigger: Atualiza historico ao alterar status do beneficiário
+CREATE TRIGGER trg_beneficiarios_status_update
+AFTER UPDATE ON beneficiarios
+FOR EACH ROW
+BEGIN
+  IF NEW.status_beneficio_id <> OLD.status_beneficio_id THEN
+    INSERT INTO historico_status_beneficiario (beneficiario_id, status_anterior_id, status_novo_id, motivo, usuario_id)
+    VALUES (NEW.id, OLD.status_beneficio_id, NEW.status_beneficio_id, 'Alteração automática via trigger', NULL);
+  END IF;
+END;
+//
 
-    CONSTRAINT fk_historico_beneficiario
-        FOREIGN KEY (beneficiario_id) REFERENCES beneficiarios(id)
-        ON DELETE CASCADE,
+-- Trigger: Loga criação de novo beneficiário
+CREATE TRIGGER trg_beneficiarios_insert
+AFTER INSERT ON beneficiarios
+FOR EACH ROW
+BEGIN
+  INSERT INTO historico_status_beneficiario (beneficiario_id, status_novo_id, motivo, usuario_id)
+  VALUES (NEW.id, NEW.status_beneficio_id, 'Beneficiário cadastrado', NULL);
+END;
+//
 
-    CONSTRAINT fk_historico_status_anterior
-        FOREIGN KEY (status_anterior_id) REFERENCES status_beneficio(id),
+DELIMITER ;
 
-    CONSTRAINT fk_historico_status_novo
-        FOREIGN KEY (status_novo_id) REFERENCES status_beneficio(id)
+-- ==============================
+-- VIEWS
+-- ==============================
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================
--- VIEWS PARA FACILITAR CONSULTAS
--- ============================================================
-
--- View com todos os dados relacionados
-CREATE OR REPLACE VIEW vw_beneficiarios_completo AS
+-- View: Beneficiários detalhados com joins
+CREATE OR REPLACE VIEW vw_beneficiarios_detalhes AS
 SELECT
-    b.id,
-    b.nome,
-    b.nome_mae,
-    b.cpf,
-    b.rg,
-    b.data_nascimento,
-    TIMESTAMPDIFF(YEAR, b.data_nascimento, CURDATE()) as idade,
-    s.nome as sexo,
-    e.nome as etnia,
-    td.nome as tipo_deficiencia,
-    sb.nome as status_beneficio,
-    lr.nome as local_retirada,
-    b.vem_livre_acesso_rmr,
-    b.telefone,
-    b.email,
-    CONCAT(b.endereco,
+  b.id,
+  b.nome,
+  b.nome_mae,
+  b.cpf,
+  b.rg,
+  b.data_nascimento,
+  TIMESTAMPDIFF(YEAR, b.data_nascimento, CURDATE()) as idade,
+  s.nome AS sexo,
+  e.nome AS etnia,
+  td.nome AS tipo_deficiencia,
+  sb.nome AS status_beneficio,
+  lr.nome AS local_retirada,
+  c.nome AS cidade,
+  c.uf,
+  r.nome AS responsavel,
+  b.telefone,
+  b.email,
+  CONCAT(b.endereco,
            CASE WHEN b.numero IS NOT NULL THEN CONCAT(', ', b.numero) ELSE '' END,
            CASE WHEN b.complemento IS NOT NULL THEN CONCAT(', ', b.complemento) ELSE '' END
     ) as endereco_completo,
-    b.bairro,
-    c.nome as cidade,
-    b.uf,
-    b.cep,
-    b.created_at,
-    b.updated_at,
-    b.ativo
+  b.endereco,
+  b.numero,
+  b.bairro,
+  b.vem_livre_acesso_rmr,
+  b.ativo,
+  b.created_at,
+  b.updated_at
 FROM beneficiarios b
-    LEFT JOIN sexos s ON b.sexo_id = s.id
-    LEFT JOIN etnias e ON b.etnia_id = e.id
-    LEFT JOIN tipos_deficiencia td ON b.tipo_deficiencia_id = td.id
-    LEFT JOIN status_beneficio sb ON b.status_beneficio_id = sb.id
-    LEFT JOIN locais_retirada lr ON b.local_retirada_id = lr.id
-    LEFT JOIN cidades c ON b.cidade_id = c.id;
+JOIN sexos s ON b.sexo_id = s.id
+JOIN etnias e ON b.etnia_id = e.id
+JOIN tipos_deficiencia td ON b.tipo_deficiencia_id = td.id
+JOIN status_beneficio sb ON b.status_beneficio_id = sb.id
+JOIN locais_retirada lr ON b.local_retirada_id = lr.id
+JOIN cidades c ON b.cidade_id = c.id
+JOIN responsaveis r ON b.id_responsavel = r.id;
 
--- ============================================================
--- TRIGGERS PARA AUDITORIA (OPCIONAL)
--- ============================================================
+-- View: Contagem de beneficiários por status
+CREATE OR REPLACE VIEW vw_beneficiarios_por_status AS
+SELECT sb.nome AS status, COUNT(b.id) AS total
+FROM beneficiarios b
+JOIN status_beneficio sb ON b.status_beneficio_id = sb.id
+GROUP BY sb.nome;
 
+-- View: Histórico de alterações
+CREATE OR REPLACE VIEW vw_historico_status_completo AS
+SELECT
+  BIN_TO_UUID(h.beneficiario_id, 1) AS beneficiario_id,
+  b.nome AS beneficiario,
+  sa.nome AS status_anterior,
+  sn.nome AS status_novo,
+  h.motivo,
+  u.nome AS usuario_responsavel,
+  h.created_at
+FROM historico_status_beneficiario h
+LEFT JOIN beneficiarios b ON b.id = h.beneficiario_id
+LEFT JOIN status_beneficio sa ON h.status_anterior_id = sa.id
+LEFT JOIN status_beneficio sn ON h.status_novo_id = sn.id
+LEFT JOIN usuarios u ON h.usuario_id = u.id;
 
-
-CREATE TRIGGER tr_beneficiario_status_change 
-    AFTER UPDATE ON beneficiarios
-    FOR EACH ROW
-BEGIN
-    IF OLD.status_beneficio_id != NEW.status_beneficio_id THEN
-        INSERT INTO historico_status_beneficiario 
-        (beneficiario_id, status_anterior_id, status_novo_id, created_at)
-        VALUES (NEW.id, OLD.status_beneficio_id, NEW.status_beneficio_id, NOW());
-    END IF;
-END;
-
+-- ==============================
+-- FIM DO SCRIPT
+-- ==============================
