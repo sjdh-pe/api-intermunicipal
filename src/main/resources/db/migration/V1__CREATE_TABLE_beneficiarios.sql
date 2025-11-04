@@ -490,7 +490,7 @@ DELIMITER ;
 -- View: Beneficiários detalhados com joins
 CREATE OR REPLACE VIEW vw_beneficiarios_detalhes AS
 SELECT
-  b.id,
+  b.id AS id,
   b.nome,
   b.nome_mae,
   b.cpf,
@@ -503,7 +503,7 @@ SELECT
   sb.nome AS status_beneficio,
   lr.nome AS local_retirada,
   c.nome AS cidade,
-  c.uf,
+  b.uf,
   r.nome AS responsavel,
   b.telefone,
   b.email,
@@ -525,7 +525,7 @@ JOIN tipos_deficiencia td ON b.tipo_deficiencia_id = td.id
 JOIN status_beneficio sb ON b.status_beneficio_id = sb.id
 JOIN locais_retirada lr ON b.local_retirada_id = lr.id
 JOIN cidades c ON b.cidade_id = c.id
-JOIN responsaveis r ON b.id_responsavel = r.id;
+LEFT JOIN responsaveis r ON b.id_responsavel = r.id;
 
 -- View: Contagem de beneficiários por status
 CREATE OR REPLACE VIEW vw_beneficiarios_por_status AS
