@@ -41,13 +41,8 @@ public record DetalhesBeneficiarioDTO(
     String cidade,
     String uf,
 
-    // Arquivos
-    String pathRg,
-    String pathCpf,
-    String pathComprovanteEndereco,
-    String pathFoto,
-    String pathLaudoMedico,
 
+    OffsetDateTime updatedAt,
     OffsetDateTime createdAt
 ) {
     public DetalhesBeneficiarioDTO(Beneficiario b) {
@@ -82,13 +77,8 @@ public record DetalhesBeneficiarioDTO(
             b.getEndereco() != null && b.getEndereco().getCidade() != null ? b.getEndereco().getCidade().getId() : null,
             b.getEndereco() != null && b.getEndereco().getCidade() != null ? b.getEndereco().getCidade().getNome() : null,
             b.getEndereco() != null ? b.getEndereco().getUf() : null,
-
-            b.getPathRg(),
-            b.getPathCpf(),
-            b.getPathComprovanteEndereco(),
-            b.getPathFoto(),
-            b.getPathLaudoMedico(),
-            b.getCreateAt()
+            b.getUpdatedAt(),
+            b.getCreatedAt()
         );
     }
 }

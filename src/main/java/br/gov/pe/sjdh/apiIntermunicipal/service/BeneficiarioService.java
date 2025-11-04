@@ -4,14 +4,18 @@ import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.model.Beneficiario;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.BeneficiarioCompletoDTO;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.repository.BeneficiarioCompletoViewRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.repository.BeneficiarioRepository;
-import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.DadosCadastrarBeneficiarioDTO;
+import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.CadastrarBeneficiarioDTO;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.DetalhesBeneficiarioDTO;
+import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.AtualizarBeneficiarioDTO;
+import br.gov.pe.sjdh.apiIntermunicipal.domain.endereco.Endereco;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.cidade.CidadeRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.etnia.EtniaRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.localRetirada.LocalRetiradaRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.sexoBeneficiario.SexoBeneficiarioRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.statusBeneficio.StatusBeneficiarioRepository;
 import br.gov.pe.sjdh.apiIntermunicipal.domain.lookup.tipoDeficiencia.TipoDeficienciaRepository;
+import br.gov.pe.sjdh.apiIntermunicipal.infra.exception.NotFoundException;
+import br.gov.pe.sjdh.apiIntermunicipal.infra.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,11 +40,11 @@ public class BeneficiarioService {
     private final StatusBeneficiarioRepository statusRepo;
     private final LocalRetiradaRepository localRepo;
     private final CidadeRepository cidadeRepo;
-     private final BeneficiarioCompletoViewRepository viewRepo;
+    private final BeneficiarioCompletoViewRepository viewRepo;
 
    public Page<BeneficiarioCompletoDTO> listar(@PageableDefault(
-                sort = "updatedAt",
-                direction = Sort.Direction.DESC,
+           sort = "updatedAt",
+           direction = Sort.Direction.DESC,
                 size = 20
         ) Pageable pageable){
        return viewRepo.findAll( pageable)
@@ -50,7 +54,7 @@ public class BeneficiarioService {
    public BeneficiarioCompletoDTO detalhar(UUID id) {
         return viewRepo.findById(id)
                        .map(BeneficiarioCompletoDTO::new)
-                       .orElseThrow(() -> new RuntimeException("Beneficiário não encontrado"));
+                       .orElseThrow(() -> new NotFoundException("Beneficiário não encontrado"));
    }
 
 
@@ -58,20 +62,22 @@ public class BeneficiarioService {
 
         BeneficiarioCompletoDTO beneficiario =viewRepo.findByCpf(cpf)
                        .map(BeneficiarioCompletoDTO::new)
-                       .orElseThrow(() -> new RuntimeException("Beneficiário não encontrado"));
+                       .orElseThrow(() -> new NotFoundException("Beneficiário não encontrado"));
         System.out.println(beneficiario.dataNascimento().toString());
         System.out.println(dataNascimento);
         if (!beneficiario.dataNascimento().toString().equals(dataNascimento)) {
-            throw new RuntimeException("Beneficiário não encontrado, CPF ou data de nascimento inválidos.");
+            throw new NotFoundException("Beneficiário não encontrado, CPF ou data de nascimento inválidos.");
         }
         return beneficiario;
 
    }
 
     @Transactional
-    public ResponseEntity<DetalhesBeneficiarioDTO> cadastrar(DadosCadastrarBeneficiarioDTO dto) {
-        System.out.println("Service: " + dto);
-
+    public ResponseEntity<DetalhesBeneficiarioDTO> cadastrar(CadastrarBeneficiarioDTO dto) {
+        System.out.println(dto.cpf().replaceAll("\\D", ""));
+       beneficiarioRepo.findByCpf(dto.cpf()).ifPresent(x -> {
+            throw new BusinessException("CPF já cadastrado para outro usuário");
+        });
 
         var sexo = sexoRepo.getReferenceById(dto.sexoId());
         var etnia = etniaRepo.getReferenceById(dto.etniaId());
@@ -91,6 +97,60 @@ public class BeneficiarioService {
             .toUri();
 
         return ResponseEntity.created(uri).body(new DetalhesBeneficiarioDTO(beneficiario));
+    }
+
+    @Transactional
+    public DetalhesBeneficiarioDTO atualizar(UUID id, AtualizarBeneficiarioDTO dto) {
+        // Carrega o agregado com relacionamentos necessários
+        Beneficiario b = beneficiarioRepo.detalharById(id)
+                .orElseThrow(() -> new NotFoundException("Beneficiário não encontrado"));
+
+        // Campos simples
+        if (dto.nome() != null) b.setNome(dto.nome());
+        if (dto.nomeMae() != null) b.setNomeMae(dto.nomeMae());
+        if (dto.rg() != null) b.setRg(dto.rg());
+        if (dto.dataNascimento() != null) b.setDataNascimento(dto.dataNascimento());
+        if (dto.telefone() != null) b.setTelefone(dto.telefone());
+        if (dto.email() != null) b.setEmail(dto.email());
+        if (dto.vemLivreAcessoRmr() != null) b.setVemLivreAcessoRmr(dto.vemLivreAcessoRmr());
+        if (dto.ativo() != null) b.setAtivo(dto.ativo());
+
+        // CPF (normaliza e valida unicidade se alterado)
+        if (dto.cpf() != null) {
+            String novoCpf = dto.cpf().replaceAll("\\D", "");
+            if (!novoCpf.equals(b.getCpf())) {
+                if (beneficiarioRepo.existsByCpfAndIdNot(novoCpf, b.getId())) {
+                    throw new BusinessException("Já existe beneficiário cadastrado com este CPF");
+                }
+                b.setCpf(novoCpf);
+            }
+        }
+
+        // Relacionamentos (apenas se IDs informados)
+        if (dto.sexoId() != null) b.setSexo(sexoRepo.getReferenceById(dto.sexoId()));
+        if (dto.etniaId() != null) b.setEtnia(etniaRepo.getReferenceById(dto.etniaId()));
+        if (dto.tipoDeficienciaId() != null) b.setTipoDeficiencia(tipoRepo.getReferenceById(dto.tipoDeficienciaId()));
+        if (dto.statusBeneficioId() != null) b.setStatusBeneficio(statusRepo.getReferenceById(dto.statusBeneficioId()));
+        if (dto.localRetiradaId() != null) b.setLocalRetirada(localRepo.getReferenceById(dto.localRetiradaId()));
+
+        // Endereço e cidade
+        if (dto.endereco() != null || dto.cidadeId() != null) {
+            var atual = b.getEndereco();
+            var cidade = dto.cidadeId() != null ? cidadeRepo.getReferenceById(dto.cidadeId())
+                    : (atual != null ? atual.getCidade() : null);
+
+            String cep = dto.endereco() != null && dto.endereco().cep() != null ? dto.endereco().cep() : (atual != null ? atual.getCep() : null);
+            String logradouro = dto.endereco() != null && dto.endereco().endereco() != null ? dto.endereco().endereco() : (atual != null ? atual.getEndereco() : null);
+            String numero = dto.endereco() != null && dto.endereco().numero() != null ? dto.endereco().numero() : (atual != null ? atual.getNumero() : null);
+            String complemento = dto.endereco() != null && dto.endereco().complemento() != null ? dto.endereco().complemento() : (atual != null ? atual.getComplemento() : null);
+            String bairro = dto.endereco() != null && dto.endereco().bairro() != null ? dto.endereco().bairro() : (atual != null ? atual.getBairro() : null);
+            String uf = dto.endereco() != null && dto.endereco().uf() != null ? dto.endereco().uf() : (atual != null ? atual.getUf() : null);
+
+            b.setEndereco(new Endereco(cep, logradouro, numero, complemento, bairro, cidade, uf));
+        }
+
+        // Persistência automática pelo contexto @Transactional
+        return new DetalhesBeneficiarioDTO(b);
     }
 
     @Transactional

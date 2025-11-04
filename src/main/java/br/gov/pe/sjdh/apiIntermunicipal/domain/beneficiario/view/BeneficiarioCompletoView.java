@@ -1,7 +1,5 @@
 package br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.view;
 
-
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,13 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
-
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/**
+ * Representa a view vw_beneficiarios_detalhes,
+ * que agrega dados detalhados do beneficiário,
+ * incluindo idade calculada, endereço formatado
+ * e nomes resolvidos das tabelas lookup.
+ */
 @Entity
-@Table(name = "vw_beneficiarios_completo") // nome da view
+@Table(name = "vw_beneficiarios_detalhes")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,15 +32,20 @@ public class BeneficiarioCompletoView {
     private UUID id;
 
     private String nome;
+
+    @Column(name = "nome_mae")
     private String nomeMae;
+
     private String cpf;
     private String rg;
 
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
+    // Idade derivada (calculada na view)
     private Integer idade;
 
+    // Campos de referência resolvidos
     private String sexo;
     private String etnia;
 
@@ -53,18 +61,23 @@ public class BeneficiarioCompletoView {
     @Column(name = "vem_livre_acesso_rmr")
     private Boolean vemLivreAcessoRmr;
 
+    // Contato
     private String telefone;
     private String email;
 
+    // Endereço formatado e campos individuais
     @Column(name = "endereco_completo")
     private String enderecoCompleto;
 
     private String bairro;
     private String cidade;
-    private String uf;
-    private String cep;
 
-    @Column(name = "created_at")
+    @Column(name = "uf")
+    private String uf;
+
+
+    // Metadados
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at")
