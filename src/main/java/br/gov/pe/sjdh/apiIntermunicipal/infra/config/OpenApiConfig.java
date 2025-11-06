@@ -13,12 +13,19 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("API PE Livre Acesso Intermunicipal")
-                .version("1.0")
-                .description("API para gestão de beneficiários do Programa PE Livre Acesso Intermunicipal")
+                        .title("🚌 API Intermunicipal – PE Livre Acesso")
+                        .description("""
+                            Documentação oficial da **API Intermunicipal**,
+                             utilizada pela
+                            **SECRETARIA DE JUSTIÇA, DIREITOS HUMANOS E PREVENÇÃO À VIOLÊNCIA (SJDHPV-PE)**
+                            
+                             para gerenciamento do programa **PE Livre Acesso Intermunicipal**.
+                            
+                            Todas as rotas estão documentadas com exemplos de requisição e resposta.
+                            """)
                 .contact(new Contact()
                     .name("SJDH")
                     .url("https://www.sjdh.pe.gov.br")
-                    .email("contato@sjdh.pe.gov.br")));
+                    .email("raul.franca@sjdh.pe.gov.br")));
     }
 }
