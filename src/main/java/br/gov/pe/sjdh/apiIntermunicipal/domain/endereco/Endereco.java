@@ -54,7 +54,7 @@ public class Endereco {
         this.uf = uf;
     }
 
-    public Endereco(DadosEndereco dados, Cidade cidade) {
+    public Endereco(DadosEnderecoDTO dados, Cidade cidade) {
         this(dados.cep(),
                 dados.endereco(),
                 dados.numero(),
