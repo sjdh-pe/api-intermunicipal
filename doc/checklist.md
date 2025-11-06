@@ -4,15 +4,15 @@
 > **Autor:** [Raul Michel de França](https://github.com/raul-franca)  
 > **Linguagem:** Java 21+ / Spring Boot 3.5.6  
 > **Arquitetura:** REST API + DDD + Flyway + Uploads locais  
-> **Última atualização:** _21/10/2025_  
+> **Última atualização:** _03/11/2025_  
 > **Total de melhorias identificadas:**
 
 ---
 
 ## 📊 Progresso geral
-🟩🟨🟨🟥🟥 **35% concluído** _(recalculado com novos itens)_
+🟩🟨🟨🟥🟥 **37% concluído** _(recalculado com novos itens)_
 
-> **Última atualização:** 21/10/2025
+> **Última atualização:** 03/11/2025
 > **Total de melhorias identificadas:** 90+ itens organizados em 13 categorias
 
 ---
@@ -25,7 +25,7 @@
 3. **Adicionar `@Valid`** nos endpoints que recebem DTOs
 4. **Remover endpoints de teste** (`/hello`, `/test-post`)
 5. **Configurar senha segura** no `.env` (não usar valores default)
-6. **Adicionar constraint UNIQUE para CPF** no banco de dados
+6. **Adicionar constraint UNIQUE para CPF** no banco de dados — já implementado na V1 (`beneficiarios_cpf_unique`)
 7. **Implementar autenticação JWT** para produção
 
 ### 🟡 Importante (melhorias de qualidade)
@@ -244,24 +244,23 @@
 </details>
 
 ---
-
 <details>
+
+
 <summary>📊 <strong>Dados e Banco</strong> — <em>migrations e integridade</em></summary>
 
 - [x] Flyway configurado com baseline
-- [x] Migration V1 criada
-- [ ] Adicionar constraint UNIQUE para CPF no banco
-- [ ] Criar índices para melhorar performance de buscas
-- [ ] Adicionar migration V2 com campos de auditoria (created_by, updated_by)
-- [ ] Implementar soft delete ao invés de exclusão física
-- [ ] Criar view materializada para beneficiários completos (performance)
-- [ ] Adicionar validação de integridade referencial em cascata
-- [ ] Documentar modelo de dados (diagrama ER)
+    - [x] Migration V1 criada
+    - [x] Adicionar constraint UNIQUE para CPF no banco (V1 já contém `beneficiarios_cpf_unique`, `responsaveis_cpf_unique`, `usuarios_cpf_unique`)
+    - [ ] Criar índices adicionais para performance (ver `doc/todos-banco.md`)
+    - [ ] Adicionar migration V2 com campos de auditoria (created_by, updated_by) e `deleted_at` para soft delete
+    - [ ] Implementar soft delete ao invés de exclusão física (usar `ativo` + `deleted_at`)
+    - [ ] Criar mecanismo de “materialized view” (tabela + job de refresh) para beneficiários completos
+    - [ ] Adicionar validação de integridade referencial em cascata onde fizer sentido
+    - [ ] Documentar modelo de dados (diagrama ER)
+    - [ ] Publicar checklist de To-Dos do banco em `doc/todos-banco.md`
 
 </details>
-
----
-
 ---
 
 ## 🔍 Issues Específicos Identificados no Código
@@ -351,7 +350,7 @@ management:
 ---
 
 ✅ **Status atual:** _Em desenvolvimento_
-📅 **Última revisão:** _21/10/2025_
+📅 **Última revisão:** _03/11/2025_
 🎯 **Próximas ações:** Focar nos itens críticos antes do primeiro deploy
 
 ---

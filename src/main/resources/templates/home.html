@@ -1,11 +1,51 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"       xmlns:th="http://www.thymeleaf.org" lang="pt-br">
-    <head>
-        <title>PE Livre Acesso Intermunicipal</title>
-    </head>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PE Livre Acesso Intermunicipal — API</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif; margin: 0; padding: 0; line-height: 1.5; }
+      .container { max-width: 880px; margin: 0 auto; padding: 2rem 1rem; }
+      h1 { margin: 0 0 0.5rem; font-size: 1.8rem; }
+      p.lead { margin: 0 0 1rem; font-size: 1rem; opacity: .9; }
+      .card { border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+      .links a { display: inline-block; margin-right: .75rem; margin-bottom: .5rem; text-decoration: none; color: #0b5ed7; }
+      .muted { opacity: .7; font-size: .9rem; }
+    </style>
+  </head>
   <body>
-    <h1>Bem vindo PE Livre Acesso Intermunicipal</h1>
-    <a th:src="@{swagger-ui/index.html}" > Swagger documentation </a>
+    <main class="container">
+      <header>
+        <h1>PE Livre Acesso Intermunicipal — API</h1>
+        <p class="lead">Bem-vindo! Esta aplicação expõe uma API REST para gestão do benefício de transporte intermunicipal em Pernambuco, incluindo cadastro e consulta de beneficiários, responsáveis, uploads de documentos e lookups de referência.</p>
+      </header>
 
+      <section class="card">
+        <h2 style="margin-top:0">Documentação</h2>
+        <p>A melhor forma de explorar os endpoints é pela interface interativa do Swagger.</p>
+        <div class="links">
+          <a th:href="@{/swagger}" target="_blank" rel="noopener">Abrir Swagger UI</a>
+          <a th:href="@{/v3/api-docs}" target="_blank" rel="noopener">OpenAPI (JSON)</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 style="margin-top:0">Como começar (dev)</h2>
+        <ul>
+          <li>Defina a variável de ambiente <code>APP_PROFILE=dev</code> para liberar as rotas em ambiente local.</li>
+          <li>Inicie a aplicação: <code>./mvnw spring-boot:run</code>. Em seguida, acesse <code>/swagger</code>.</li>
+        </ul>
+        <p class="muted">CORS e outras opções podem ser ajustadas via variáveis de ambiente. Consulte o README para detalhes.</p>
+      </section>
+
+      <footer class="muted">
+        <p style="text-align: center">© Secretaria de Justiça, Direitos Humanos e Prevenção à Violência de Pernambuco — <strong>Programa PE Livre Acesso Intermunicipal.</strong>
+            <strong>Desenvolvido por:</strong> <a href="https://github.com/sjdh-pe" target="_blank" rel="noopener">SUPTI - SJDH</a>
+
+        </p>
+      </footer>
+    </main>
   </body>
 </html>
