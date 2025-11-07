@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public Page<UsuarioResumoDTO> listar(Pageable pageable) {
         return repository.findAll(pageable).map(UsuarioResumoDTO::new);
@@ -52,10 +54,12 @@ public class UsuarioService {
             throw new BusinessException("E-mail já cadastrado para outro usuário");
         });
 
+        String senhaCodificada = encodeIfNeeded(dados.senha());
+
         Usuario novo = Usuario.builder()
                 .nome(dados.nome())
                 .cpf(dados.cpf())
-                .senha(dados.senha())
+                .senha(senhaCodificada)
                 .email(dados.email())
                 .ativo(dados.ativo() == null ? true : dados.ativo())
                 .build();
@@ -86,7 +90,7 @@ public class UsuarioService {
 
         if (dados.nome() != null) existente.setNome(dados.nome());
         if (dados.cpf() != null) existente.setCpf(dados.cpf());
-        if (dados.senha() != null) existente.setSenha(dados.senha());
+        if (dados.senha() != null) existente.setSenha(encodeIfNeeded(dados.senha()));
         if (dados.email() != null) existente.setEmail(dados.email());
         if (dados.ativo() != null) existente.setAtivo(dados.ativo());
 
@@ -100,5 +104,19 @@ public class UsuarioService {
             throw new NotFoundException("Usuário não encontrado");
         }
         repository.deleteById(id);
+    }
+
+    private String encodeIfNeeded(String senha) {
+        if (senha == null || senha.isBlank()) return senha;
+        if (looksLikeBCrypt(senha)) return senha; // evita double-encoding
+        return passwordEncoder.encode(senha);
+    }
+
+    private boolean looksLikeBCrypt(String value) {
+        // BCrypt padrão: 60 chars, prefixo $2a$, $2b$ ou $2y$
+        if (value.length() == 60 && (value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$"))) {
+            return true;
+        }
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -27,8 +28,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        HttpSecurity cors = http
+        http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
                     if ("dev".equals(profile) || "local".equals(profile)) {
                         // Modo desenvolvimento: libera tudo
@@ -37,16 +39,22 @@ public class SecurityConfig {
                         // Modo produção: protege endpoints
                         auth
                                 .requestMatchers(
-                                        "/beneficiarios/**",
+                                        "/auth/**",
                                         "/lookup/**",
                                         "/public/**",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
-                                        "/swagger-ui.html"
+                                        "/swagger-ui.html",
+                                        "/swagger",
+                                        "/actuator/health",
+                                        "/actuator/health/**"
                                 ).permitAll()
                                 .anyRequest().authenticated();
                     }
                 })
+                .oauth2ResourceServer(
+                        oauth2 -> oauth2
+                                .jwt(Customizer.withDefaults()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults());
