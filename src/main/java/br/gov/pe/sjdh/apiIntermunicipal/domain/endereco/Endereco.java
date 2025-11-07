@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 public class Endereco {
 
     @Column(length = 9)
-    @Pattern(regexp = "^\\d{5}-?\\d{3}$", message = "CEP inválido")
+    @Pattern(regexp = "^\\d{5}-?\\d{3}$", message = "{Pattern.beneficiario.cep}")
     private String cep;
 
     @Column(length = 200)
-    @NotBlank
+    @NotBlank(message = "{NotBlank}")
     private String endereco;
 
     @Column(length = 10)
@@ -26,7 +26,7 @@ public class Endereco {
     @Column(length = 50)
     private String complemento;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank}")
     @Column(length = 80)
     private String bairro;
 
@@ -34,7 +34,8 @@ public class Endereco {
     @JoinColumn(name = "cidade_id")
     private Cidade cidade;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank}")
+    @Pattern(regexp = "^[A-Za-z]{2}$", message = "{Pattern.beneficiario.uf}")
     @Column(length = 2)
     private String uf;
 

@@ -10,66 +10,66 @@ import java.time.LocalDate;
 
 public record CadastrarBeneficiarioDTO(
 
-    @NotBlank(message = "O nome é obrigatório")
-    @Size(max = 100, message = "O nome pode ter no máximo 100 caracteres")
+    @NotBlank(message = "{NotBlank.beneficiario.nome}")
+    @Size(max = 100, message = "{Size.beneficiario.nome}")
     String nome,
 
-    @NotBlank(message = "O nome da mãe é obrigatório")
-    @Size(max = 100, message = "O nome da mãe pode ter no máximo 100 caracteres")
+    @NotBlank(message = "{NotBlank.beneficiario.nomeMae}")
+    @Size(max = 100, message = "{Size.beneficiario.nomeMae}")
     String nomeMae,
 
-    @NotBlank(message = "O CPF é obrigatório")
+    @NotBlank(message = "{NotBlank.beneficiario.cpf}")
     String cpf,
 
-    @NotBlank(message = "O RG é obrigatório")
-    @Size(max = 20, message = "O RG pode ter no máximo 20 caracteres")
+    @NotBlank(message = "{NotBlank.beneficiario.rg}")
+    @Size(max = 20, message = "{Size.beneficiario.rg}")
     String rg,
 
-    @NotNull(message = "A data de nascimento é obrigatória")
-    @Past(message = "A data de nascimento deve estar no passado")
+    @NotNull(message = "{NotNull.beneficiario.dataNascimento}")
+    @Past
     LocalDate dataNascimento,
 
     // Chaves estrangeiras
-    @NotNull(message = "O sexo é obrigatório")
-    @Positive(message = "ID de sexo inválido")
+    @NotNull(message = "{NotNull.beneficiario.sexo}")
+    @Positive
     Short sexoId,
 
-    @NotNull(message = "A etnia é obrigatória")
-    @Positive(message = "ID de etnia inválido")
+    @NotNull(message = "{NotNull.beneficiario.etnia}")
+    @Positive
     Short etniaId,
 
-    @NotNull(message = "O tipo de deficiência é obrigatório")
-    @Positive(message = "ID do tipo de deficiência inválido")
+    @NotNull(message = "{NotNull.beneficiario.tipoDeficiencia}")
+    @Positive
     Short tipoDeficienciaId,
 
-    @NotNull(message = "O status do benefício é obrigatório")
-    @Positive(message = "ID do status do benefício inválido")
+    @NotNull(message = "{NotNull.beneficiario.statusBeneficio}")
+    @Positive
     Short statusBeneficioId,
 
-    @NotNull(message = "O local de retirada é obrigatório")
-    @Positive(message = "ID do local de retirada inválido")
+    @NotNull(message = "{NotNull.beneficiario.localRetirada}")
+    @Positive
     Short localRetiradaId,
 
-    @NotNull(message = "A cidade é obrigatória")
-    @Positive(message = "ID da cidade inválido")
+    @NotNull
+    @Positive
     Short cidadeId,
 
     // Contato
-    @NotBlank(message = "O telefone é obrigatório")
-    @Pattern(regexp = "\\d{8,15}", message = "Telefone deve conter apenas números (8 a 15 dígitos)")
+    @NotBlank(message = "{NotBlank.beneficiario.telefone}")
+    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "{Pattern.beneficiario.telefone}")
     String telefone,
 
-    @NotBlank(message = "O e-mail é obrigatório")
-    @Email(message = "Formato de e-mail inválido")
-    @Size(max = 100, message = "O e-mail pode ter no máximo 100 caracteres")
+    @NotBlank(message = "{NotBlank.beneficiario.email}")
+    @Email(message = "{Email.beneficiario.email}")
+    @Size(max = 100, message = "{Size.beneficiario.email}")
     String email,
 
     // Endereço
-    @NotNull(message = "O endereço é obrigatório")
+    @NotNull(message = "{NotNull.beneficiario.endereco}")
     @Valid // Permite validar os campos internos de DadosEndereco
     DadosEnderecoDTO endereco,
 
-    @NotNull(message = "Informe se possui VEM Livre Acesso RMR")
+    @NotNull(message = "{NotNull.beneficiario.vemLivreAcessoRmr}")
     Boolean vemLivreAcessoRmr
 
 ) { }

@@ -63,8 +63,6 @@ public class BeneficiarioService {
         BeneficiarioCompletoDTO beneficiario =viewRepo.findByCpf(cpf)
                        .map(BeneficiarioCompletoDTO::new)
                        .orElseThrow(() -> new NotFoundException("Beneficiário não encontrado"));
-        System.out.println(beneficiario.dataNascimento().toString());
-        System.out.println(dataNascimento);
         if (!beneficiario.dataNascimento().toString().equals(dataNascimento)) {
             throw new NotFoundException("Beneficiário não encontrado, CPF ou data de nascimento inválidos.");
         }
@@ -74,9 +72,9 @@ public class BeneficiarioService {
 
     @Transactional
     public ResponseEntity<DetalhesBeneficiarioDTO> cadastrar(CadastrarBeneficiarioDTO dto) {
-        System.out.println(dto.cpf().replaceAll("\\D", ""));
+
        beneficiarioRepo.findByCpf(dto.cpf()).ifPresent(x -> {
-            throw new BusinessException("CPF já cadastrado para outro usuário");
+            throw new BusinessException("CPF já cadastrado para outro beneficiário");
         });
 
         var sexo = sexoRepo.getReferenceById(dto.sexoId());

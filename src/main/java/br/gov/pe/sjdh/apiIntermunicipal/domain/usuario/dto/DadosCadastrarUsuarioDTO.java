@@ -9,21 +9,21 @@ import jakarta.validation.constraints.Size;
  * DTO de entrada para cadastro de Usuário.
  */
 public record DadosCadastrarUsuarioDTO(
-        @NotBlank(message = "O nome é obrigatório")
-        @Size(max = 100, message = "O nome pode ter no máximo 100 caracteres")
+        @NotBlank(message = "{NotBlank}")
+        @Size(max = 100, message = "{Size.usuario.nome}")
         String nome,
 
-        @NotBlank(message = "O CPF é obrigatório")
-        @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
+        @NotBlank(message = "{NotBlank}")
+        @Pattern(regexp = "\\d{11}", message = "{cpf.invalido}")
         String cpf,
 
-        @NotBlank(message = "A senha é obrigatória")
-        @Size(min = 6, max = 255, message = "A senha deve ter entre 6 e 255 caracteres")
+        @NotBlank(message = "{NotBlank}")
+        @Size(min = 6, max = 255, message = "{Size.usuario.senha}")
         String senha,
 
-        @NotBlank(message = "O e-mail é obrigatório")
-        @Email(message = "E-mail inválido")
-        @Size(max = 100, message = "O e-mail pode ter no máximo 100 caracteres")
+        @NotBlank(message = "{NotBlank}")
+        @Email(message = "{Email}")
+        @Size(max = 100, message = "{Size.usuario.email}")
         String email,
 
         Boolean ativo

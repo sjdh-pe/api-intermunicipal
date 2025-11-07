@@ -7,23 +7,23 @@ import jakarta.validation.constraints.Size;
 
 public record DadosEnderecoDTO(
 
-        @NotBlank(message = "O logradouro é obrigatório")
-    @Size(max = 200, message = "O logradouro pode ter no máximo 200 caracteres")
+        @NotBlank(message = "{NotBlank}")
+    @Size(max = 200, message = "{Size.beneficiario.endereco}")
     String endereco,
 
-    @NotBlank(message = "O bairro é obrigatório")
-    @Size(max = 80, message = "O bairro pode ter no máximo 80 caracteres")
+    @NotBlank(message = "{NotBlank}")
+    @Size(max = 80, message = "{Size.beneficiario.bairro}")
     String bairro,
 
-    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP deve estar no formato 00000-000")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "{Pattern.beneficiario.cep}")
     String cep,
 
-    @Size(max = 10, message = "O número pode ter no máximo 10 caracteres")
+    @Size(max = 10, message = "{Size.beneficiario.numero}")
     String numero,
 
-    @Size(max = 50, message = "O complemento pode ter no máximo 50 caracteres")
+    @Size(max = 50, message = "{Size.beneficiario.complemento}")
     String complemento,
 
-    @Size(min = 2, max = 2, message = "UF deve conter exatamente 2 letras")
+    @Pattern(regexp = "^[A-Za-z]{2}$", message = "{Pattern.beneficiario.uf}")
     String uf
 ) { }

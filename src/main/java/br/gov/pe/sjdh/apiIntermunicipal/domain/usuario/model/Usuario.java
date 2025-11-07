@@ -25,24 +25,24 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "{NotBlank}")
+    @Size(max = 100, message = "{Size.usuario.nome}")
     @Column(length = 100, nullable = false)
     private String nome;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
+    @NotBlank(message = "{NotBlank}")
+    @Pattern(regexp = "\\d{11}", message = "{cpf.invalido}")
     @Column(length = 11, nullable = false, unique = true)
     private String cpf;
 
-    @NotBlank
-    @Size(min = 6, max = 255)
+    @NotBlank(message = "{NotBlank}")
+    @Size(min = 6, max = 255, message = "{Size.usuario.senha}")
     @Column(length = 255, nullable = false)
     private String senha;
 
-    @NotBlank
-    @Email
-    @Size(max = 100)
+    @NotBlank(message = "{NotBlank}")
+    @Email(message = "{Email}")
+    @Size(max = 100, message = "{Size.usuario.email}")
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 

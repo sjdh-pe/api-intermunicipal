@@ -26,5 +26,5 @@ public interface BeneficiarioRepository extends JpaRepository<Beneficiario, UUID
 
     boolean existsByCpfAndIdNot(String cpf, UUID id);
 
-    Optional<Object> findByCpf(@NotBlank(message = "O CPF é obrigatório") String cpf);
+    Optional<Object> findByCpf(@NotBlank(message = "{NotBlank.beneficiario.cpf}") String cpf);
 }

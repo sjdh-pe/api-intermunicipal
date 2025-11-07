@@ -8,16 +8,16 @@ import jakarta.validation.constraints.Size;
  * DTO de entrada para cadastro de Responsável.
  */
 public record DadosCadastrarResponsavelDTO(
-        @NotBlank(message = "O nome é obrigatório")
-        @Size(max = 80, message = "O nome pode ter no máximo 80 caracteres")
+        @NotBlank(message = "{NotBlank}")
+        @Size(max = 80, message = "{Size.responsavel.nome}")
         String nome,
 
-        @NotBlank(message = "O CPF é obrigatório")
-        @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
+        @NotBlank(message = "{NotBlank}")
+        @Pattern(regexp = "\\d{11}", message = "{cpf.invalido}")
         String cpf,
 
-        @NotBlank(message = "O RG é obrigatório")
-        @Size(max = 15, message = "O RG pode ter no máximo 15 caracteres")
+        @NotBlank(message = "{NotBlank}")
+        @Size(max = 15, message = "{Size.responsavel.rg}")
         String rg,
 
         // opcional: permite enviar explicitamente, caso contrário será true pela entidade

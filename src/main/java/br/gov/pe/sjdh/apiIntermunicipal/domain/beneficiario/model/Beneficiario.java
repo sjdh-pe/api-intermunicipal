@@ -42,21 +42,21 @@ public class Beneficiario {
     @Column(updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank.beneficiario.nome}")
     @Column(length = 100, nullable = false)
     private String nome;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank.beneficiario.nomeMae}")
     @Column(name = "nome_mae", length = 100, nullable = false)
     private String nomeMae;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank.beneficiario.cpf}")
     //@CPF
     @Column(length = 11, unique = true, nullable = false)
-    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
+    @Pattern(regexp = "\\d{11}", message = "{Pattern.beneficiario.cpf}")
     private String cpf;
 
-    @NotBlank
+    @NotBlank(message = "{NotBlank.beneficiario.rg}")
     @Column(length = 20, nullable = false)
     private String rg;
 
@@ -95,13 +95,13 @@ public class Beneficiario {
     // CONTATO
     // ========================
 
-    @NotBlank
-    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "Telefone inválido")
+    @NotBlank(message = "{NotBlank.beneficiario.telefone}")
+    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "{Pattern.beneficiario.telefone}")
     @Column(length = 15, nullable = false)
     private String telefone;
 
-    @Email
-    @NotBlank
+    @Email(message = "{Email.beneficiario.email}")
+    @NotBlank(message = "{NotBlank.beneficiario.email}")
     @Column(length = 100, nullable = false)
     private String email;
 

@@ -29,18 +29,18 @@ public class Responsavel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
-    @Size(max = 80)
+    @NotBlank(message = "{NotBlank}")
+    @Size(max = 80, message = "{Size.responsavel.nome}")
     @Column(length = 80, nullable = false)
     private String nome;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
+    @NotBlank(message = "{NotBlank}")
+    @Pattern(regexp = "\\d{11}", message = "{cpf.invalido}")
     @Column(length = 11, unique = true, nullable = false)
     private String cpf;
 
-    @NotBlank
-    @Size(max = 15)
+    @NotBlank(message = "{NotBlank}")
+    @Size(max = 15, message = "{Size.responsavel.rg}")
     @Column(length = 15, nullable = false)
     private String rg;
 
