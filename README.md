@@ -8,6 +8,7 @@ API oficial para gestão de beneficiários do programa PE Livre Acesso Intermuni
 - Pré‑requisitos
 - Configuração do ambiente (.env) e execução
 - Perfis de execução, segurança e CORS
+- Autenticação JWT (Bearer)
 - Banco de dados e migrações (Flyway)
 - Documentação da API (Swagger/OpenAPI)
 - Fluxos principais da aplicação (guias de uso)
@@ -18,7 +19,7 @@ API oficial para gestão de beneficiários do programa PE Livre Acesso Intermuni
   - Upload de arquivos do beneficiário
 - Padrões de paginação, ordenação e erros
 - Variáveis de ambiente (tabela)
-- Testes automatizados (H2 e dicas)
+- Documentação adicional (Actuator e Checklist)
 - Estrutura do projeto
 - Dicas operacionais e troubleshooting
 - Licença e créditos
@@ -28,7 +29,7 @@ API oficial para gestão de beneficiários do programa PE Livre Acesso Intermuni
 - Linguagem/stack: Java 21, Spring Boot 3.5.6
 - Build/empacotamento: Maven (wrapper incluso `mvnw`)
 - Banco de dados: MySQL 8.x (JDBC) com migrações via Flyway
-- Documentação: springdoc‑openapi (Swagger UI em `/swagger`)
+- Documentação: springdoc‑openapi 2.8.13 (Swagger UI em `/swagger`)
 - Segurança: Spring Security com comportamento por perfil (`APP_PROFILE`)
 - Outras dependências relevantes: Lombok, Thymeleaf, spring‑dotenv (carrega `.env`), Spring Web, Spring Data JPA
 
@@ -73,11 +74,40 @@ Ponto de entrada: `src/main/java/br/gov/pe/sjdh/apiIntermunicipal/ApiIntermunici
 ## Perfis de execução, segurança e CORS
 - Classe de segurança: `infra/config/SecurityConfig.java` (varia por `APP_PROFILE`).
   - `dev` ou `local`: todas as rotas liberadas (permitAll). Ideal para desenvolvimento e testes manuais.
-  - Outros perfis (produção): endpoints sensíveis exigem autenticação. Swagger e algumas rotas públicas permanecem liberadas conforme a política.
+  - Outros perfis (produção): endpoints sensíveis exigem autenticação via JWT (OAuth2 Resource Server). Swagger e algumas rotas públicas permanecem liberadas conforme a política.
 - CORS: configure origens permitidas via `CORS_ALLOWED_ORIGINS` (múltiplas separadas por vírgula), populando `app.cors.allowed-origins`.
 
 Dica: Para testar com front‑end local (React/Angular/Vue), inclua a origem do front em `CORS_ALLOWED_ORIGINS`.
 
+
+## Autenticação JWT (Bearer)
+A aplicação está preparada como um OAuth2 Resource Server com validação de tokens JWT.
+
+- Perfis `dev`/`local`: a segurança é liberada (não exige token) para acelerar o desenvolvimento.
+- Demais perfis: requisições a endpoints protegidos devem enviar o cabeçalho `Authorization: Bearer <token>`.
+
+Pontos importantes:
+- Configuração base: veja `SecurityConfig#filterChain` com `.oauth2ResourceServer(oauth2 -> oauth2.jwt(...))`.
+- Segredo e expiração (quando utilizado decoder simétrico/HS256):
+  - `JWT_SECRET` define a chave de assinatura.
+  - `JWT_EXPIRATION` define o tempo de expiração padrão (segundos).
+- Alternativamente, é possível configurar um Provedor de Chaves (JWK Set URI) externo:
+  - Propriedade padrão do Spring: `spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://<issuer>/.well-known/jwks.json`.
+  - Ou registrar um `JwtDecoder` como `@Bean`.
+
+Como enviar o token:
+```bash
+curl -H "Authorization: Bearer <SEU_JWT_AQUI>" \
+     -H 'Content-Type: application/json' \
+     http://localhost:3000/beneficiarios
+```
+
+No Swagger:
+- Acesse `/swagger` e clique em "Authorize" (cadeado), informe `Bearer <token>`.
+- Após autorizado, as chamadas do Swagger incluirão o header automaticamente.
+
+Observação:
+- Este repositório não expõe, por padrão, um endpoint de emissão de tokens ("/auth/login") — integre com seu provedor de identidade (Keycloak, Cognito, etc.) ou implemente um emissor interno conforme necessidade.
 
 ## Banco de dados e migrações (Flyway)
 - URL padrão: `jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}`
@@ -85,7 +115,7 @@ Dica: Para testar com front‑end local (React/Angular/Vue), inclua a origem do 
 - Migrações: `src/main/resources/db/migration`
   - `V1__CREATE_TABLE_beneficiarios.sql`: cria tabelas principais (`beneficiarios`, `responsaveis`, `usuarios`, `beneficiario_arquivo`, `historico_status_beneficiario`, catálogos de lookups como `tipo_arquivo`, etc.) e insere seeds iniciais de `tipo_arquivo`.
 
-Observação: Em ambientes sem MySQL ativo, a aplicação pode falhar ao subir devido à conexão/migração. Veja a seção de Testes para opções com H2.
+Como funciona: ao iniciar a aplicação com o banco configurado, o Flyway verifica a versão atual do schema e aplica, em ordem, os scripts pendentes da pasta `db/migration` até alinhar o banco ao estado esperado.
 
 
 ## Documentação da API (Swagger/OpenAPI)
@@ -253,32 +283,13 @@ As variáveis têm fallback em `src/main/resources/application.properties` e pod
 | `MAX_FILE_SIZE` | Tamanho máximo de arquivo | `20MB` |
 | `MAX_REQUEST_SIZE` | Tamanho máximo da requisição | `100MB` |
 | `UPLOAD_DIR` | Diretório base para uploads | `uploads` |
+| `JWT_SECRET` | Segredo para assinatura/validação de JWT (HS256, ambientes sem JWK) | `change-me-please-32-characters-minimum-change-me` |
+| `JWT_EXPIRATION` | Expiração padrão do token em segundos | `3600` |
 
 
-## Testes automatizados (H2 e dicas)
-- Rodar todos os testes:
-  ```bash
-  ./mvnw -q test
-  ```
-- O teste básico `contextLoads` passa sem MySQL ativo.
-- Para testes que sobem contexto completo sem depender de MySQL, sugere‑se:
-  ```
-  @SpringBootTest(properties = {
-      "spring.flyway.enabled=false",
-      "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
-      "spring.datasource.driver-class-name=org.h2.Driver",
-      "spring.jpa.hibernate.ddl-auto=update"
-  })
-  ```
-  E adicione no `pom.xml`:
-  ```xml
-  <dependency>
-    <groupId>com.h2database</groupId>
-    <artifactId>h2</artifactId>
-    <scope>test</scope>
-  </dependency>
-  ```
-- Para testes de controller, prefira `@WebMvcTest(Controller.class)` com `MockMvc` e `@MockBean` dos serviços.
+## Documentação adicional (Actuator e Checklist)
+- Guia do Actuator: `doc/actuator.md`
+- Checklist de verificação: `doc/checklist.md`
 
 
 ## Estrutura do projeto
@@ -306,7 +317,7 @@ api-intermunicipal/
 ├─ uploads/
 └─ doc/
    ├─ checklist.md
-   └─ rascunho.md
+   └─ actuator.md
 ```
 
 
