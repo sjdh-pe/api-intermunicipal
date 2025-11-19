@@ -7,6 +7,8 @@ import br.gov.pe.sjdh.apiIntermunicipal.domain.beneficiario.dto.AtualizarBenefic
 import br.gov.pe.sjdh.apiIntermunicipal.infra.exception.BusinessException;
 import br.gov.pe.sjdh.apiIntermunicipal.infra.exception.ErrorResponse;
 import br.gov.pe.sjdh.apiIntermunicipal.service.BeneficiarioService;
+import br.gov.pe.sjdh.apiIntermunicipal.service.CarteirinhaService;
+import br.gov.pe.sjdh.apiIntermunicipal.service.BeneficiarioArquivoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +34,10 @@ public class BeneficiarioController {
 
     @Autowired
     private BeneficiarioService service;
+    @Autowired
+    private CarteirinhaService carteirinhaService;
+    @Autowired
+    private BeneficiarioArquivoService beneficiarioArquivoService;
 
     // ============================================================
     // 🔹 1. Listar beneficiários (paginação)
@@ -134,5 +140,45 @@ public class BeneficiarioController {
     @GetMapping("/{id}")
     public ResponseEntity<BeneficiarioCompletoDTO> detalhar(@PathVariable UUID id) {
         return ResponseEntity.ok(service.detalhar(id));
+    }
+
+    // ============================================================
+    // 🔹 6.1. Listar arquivos do beneficiário com links de download
+    // ============================================================
+    @Operation(
+        summary = "Listar arquivos do beneficiário",
+        description = "Retorna a lista de arquivos ativos do beneficiário com links para download."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de arquivos retornada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Beneficiário não encontrado",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/{id}/arquivos")
+    public ResponseEntity<java.util.List<BeneficiarioArquivoService.ArquivoResumo>> listarArquivos(@PathVariable UUID id) {
+        var lista = beneficiarioArquivoService.listarArquivosDoBeneficiario(id);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ============================================================
+    // 🔹 7. Gerar carteirinha do beneficiário (PDF)
+    // ============================================================
+    @Operation(
+        summary = "Gerar carteirinha (PDF)",
+        description = "Gera um PDF de carteirinha do beneficiário a partir de um template. Retorna o arquivo em application/pdf."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Beneficiário não encontrado",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping(value = "/{id}/carteirinha", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> gerarCarteirinha(@PathVariable UUID id) {
+        byte[] pdf = carteirinhaService.gerarCarteirinha(id);
+        String filename = "carteirinha-" + id + ".pdf";
+        return ResponseEntity
+                .ok()
+                .header("Content-Disposition", "inline; filename=" + filename)
+                .body(pdf);
     }
 }

@@ -104,4 +104,11 @@ public class FileStorageService {
                 .replaceAll("[^A-Za-z0-9_-]", "");
         return cleaned.isEmpty() ? "arquivo" : cleaned;
     }
+
+    /**
+     * Retorna o diretório base de uploads resolvido.
+     */
+    public Path getDestino() {
+        return destino;
+    }
 }
